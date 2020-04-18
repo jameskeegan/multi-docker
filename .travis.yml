@@ -1,0 +1,23 @@
+language: generic
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t jameskeegan/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true jameskeegan/react-test npm test
+
+after_success:
+    - docker build -t jameskeegan/multi-client ./client
+    - docker build -t jameskeegan/multi-nginx ./nginx
+    - docker build -t jameskeegan/multi-server ./server
+    - docker build -t jameskeegan/multi-worker ./worker
+    # log in to docker
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    # Push them to docker hub
+    - docker push jameskeegan/multi-client
+    - docker push jameskeegan/multi-nginx 
+    - docker push jameskeegan/multi-server
+    - docker push jameskeegan/multi-worker
