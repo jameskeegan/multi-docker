@@ -21,3 +21,16 @@ after_success:
     - docker push jrakeegan/multi-nginx 
     - docker push jrakeegan/multi-server
     - docker push jrakeegan/multi-worker
+
+deploy:
+    edge: true # forces Travis to use the v2 version of the dpl script which does not contain some old bug
+    provider: elasticbeanstalk
+    region: eu-west-1
+    app: multi-docker
+    env: MultiDocker-env
+    bucket_name: elasticbeanstalk-eu-west-1-593427252238
+    bucket_path: multi-docker
+    on: # only run on master branch
+        branch: master
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
